@@ -61,7 +61,7 @@ export default function DashboardLayout() {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   const Sidebar = ({ mobile = false }) => (
-    <div className={`flex flex-col h-full ${mobile ? 'p-4' : 'p-5'}`}>
+    <div className={`flex flex-col h-full ${mobile ? 'p-4' : 'p-5'} overflow-y-auto`}>
       {/* Logo */}
       <div className="flex items-center gap-3 mb-8 px-1">
         <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200">

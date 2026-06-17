@@ -117,15 +117,7 @@ export default function LoginPage() {
               <div className="flex-1 h-px bg-white/10" />
             </div>
             <div className="grid grid-cols-3 gap-2">
-              {DEMO_ACCOUNTS.map(acc => (
-                <button key={acc.label} onClick={() => quickLogin(acc)} disabled={loading}
-                  className="flex flex-col items-center gap-1.5 p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all disabled:opacity-50">
-                  <div className={`w-7 h-7 ${acc.color} rounded-lg flex items-center justify-center`}>
-                    <span className="text-white text-xs font-bold">{acc.label[0]}</span>
-                  </div>
-                  <span className="text-white text-xs font-medium">{acc.label}</span>
-                </button>
-              ))}
+             
             </div>
           </div>
 

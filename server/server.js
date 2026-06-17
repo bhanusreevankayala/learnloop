@@ -19,49 +19,54 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-// Connect DB
+/* =========================
+   CONNECT DATABASE
+========================= */
 connectDB();
 
 /* =========================
-   CORS CONFIG (FIXED)
+   BODY PARSERS
+========================= */
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+/* =========================
+   CORS CONFIG (FIXED + SAFE)
 ========================= */
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  "https://learnloop-i6s2.vercel.app",
   "https://learnloop-zero-to-hero-s-projects.vercel.app"
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // allow mobile apps / postman (no origin)
+    // Allow Postman / mobile apps
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
-    } else {
-      return callback(new Error("CORS blocked for origin: " + origin));
     }
+
+    // Block unknown origins silently (IMPORTANT for Render stability)
+    return callback(null, false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// Handle preflight requests
+// Handle preflight requests properly
 app.options("*", cors());
 
 /* =========================
-   MIDDLEWARE
+   LOGGING
 ========================= */
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
 /* =========================
    ROUTES
 ========================= */
-
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/classes', classRoutes);
@@ -75,7 +80,6 @@ app.use('/api/admin', adminRoutes);
 /* =========================
    HEALTH CHECK
 ========================= */
-
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -86,9 +90,8 @@ app.get('/api/health', (req, res) => {
 /* =========================
    GLOBAL ERROR HANDLER
 ========================= */
-
 app.use((err, req, res, next) => {
-  console.error("❌ Error:", err.message);
+  console.error("❌ Server Error:", err.message);
 
   res.status(err.statusCode || 500).json({
     success: false,
@@ -100,7 +103,6 @@ app.use((err, req, res, next) => {
 /* =========================
    START SERVER
 ========================= */
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

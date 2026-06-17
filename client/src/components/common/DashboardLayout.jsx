@@ -58,10 +58,13 @@ export default function DashboardLayout() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogout = () => { 
+    logout(); 
+    navigate('/login'); 
+  };
 
   const Sidebar = ({ mobile = false }) => (
-    <div className={`flex flex-col h-full ${mobile ? 'p-4' : 'p-5'} overflow-y-auto`}>
+    <div className={`flex flex-col h-full ${mobile ? 'p-4 overflow-y-auto' : 'p-5'}`}>
       {/* Logo */}
       <div className="flex items-center gap-3 mb-8 px-1">
         <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200">
@@ -90,7 +93,10 @@ export default function DashboardLayout() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">Navigation</p>
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">
+          Navigation
+        </p>
+
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
@@ -105,7 +111,7 @@ export default function DashboardLayout() {
       </nav>
 
       {/* Bottom links */}
-      <div className="border-t border-slate-100 pt-4 space-y-1 mt-4">
+      <div className="border-t border-slate-100 pt-4 space-y-1 mt-auto">
         <NavLink
           to={`/${user?.role}/notifications`}
           onClick={() => setSidebarOpen(false)}
@@ -119,15 +125,22 @@ export default function DashboardLayout() {
             </span>
           )}
         </NavLink>
+
         <NavLink
           to={`/${user?.role}/profile`}
           onClick={() => setSidebarOpen(false)}
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
-          <User size={18} /><span>Profile</span>
+          <User size={18} />
+          <span>Profile</span>
         </NavLink>
-        <button onClick={handleLogout} className="sidebar-link w-full text-red-500 hover:bg-red-50 hover:text-red-600">
-          <LogOut size={18} /><span>Logout</span>
+
+        <button
+          onClick={handleLogout}
+          className="sidebar-link w-full text-red-500 hover:bg-red-50 hover:text-red-600"
+        >
+          <LogOut size={18} />
+          <span>Logout</span>
         </button>
       </div>
     </div>
@@ -135,6 +148,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
+
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-100 flex-shrink-0">
         <Sidebar />
@@ -143,7 +157,10 @@ export default function DashboardLayout() {
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+          />
           <aside className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl">
             <div className="flex items-center justify-between px-5 pt-5">
               <span className="font-display font-bold text-slate-900">Menu</span>
@@ -151,24 +168,31 @@ export default function DashboardLayout() {
                 <X size={18} />
               </button>
             </div>
-            <Sidebar mobile />
+
+            {/* FIXED: mobile sidebar scroll */}
+            <div className="h-full overflow-y-auto">
+              <Sidebar mobile />
+            </div>
           </aside>
         </div>
       )}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
+
         {/* Top bar (mobile) */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100">
           <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-slate-100">
             <Menu size={20} />
           </button>
+
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-primary-600 rounded-lg flex items-center justify-center">
               <GraduationCap className="w-4 h-4 text-white" />
             </div>
             <span className="font-display font-bold text-slate-900">LearnLoop</span>
           </div>
+
           <NavLink to={`/${user?.role}/notifications`} className="relative p-2">
             <Bell size={20} className="text-slate-600" />
             {unreadCount > 0 && (

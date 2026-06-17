@@ -44,7 +44,6 @@ export default function DashboardLayout() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const navItems = { student: studentNav, teacher: teacherNav, admin: adminNav }[user?.role] || [];
-  const RoleIcon = roleIcons[user?.role] || GraduationCap;
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -58,20 +57,27 @@ export default function DashboardLayout() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = () => { 
-    logout(); 
-    navigate('/login'); 
+  const handleLogout = () => {
+    logout();
+    setSidebarOpen(false);
+    navigate('/login');
   };
 
   const Sidebar = ({ mobile = false }) => (
-    <div className={`flex flex-col h-full ${mobile ? 'p-4 overflow-y-auto' : 'p-5'}`}>
+    <div
+      className={`flex flex-col h-full ${
+        mobile ? 'p-4' : 'p-5'
+      } overflow-y-auto`}
+    >
       {/* Logo */}
       <div className="flex items-center gap-3 mb-8 px-1">
         <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200">
           <GraduationCap className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="font-display font-bold text-slate-900 text-base leading-tight">LearnLoop</h1>
+          <h1 className="font-display font-bold text-slate-900 text-base leading-tight">
+            LearnLoop
+          </h1>
           <p className="text-xs text-slate-400">No Student Left Behind</p>
         </div>
       </div>
@@ -83,7 +89,9 @@ export default function DashboardLayout() {
             {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-semibold text-slate-900 text-sm truncate">{user?.name}</p>
+            <p className="font-semibold text-slate-900 text-sm truncate">
+              {user?.name}
+            </p>
             <span className={`badge text-xs ${roleBadgeColors[user?.role]}`}>
               {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
             </span>
@@ -102,34 +110,31 @@ export default function DashboardLayout() {
             key={to}
             to={to}
             onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
           >
-            <Icon className="w-4.5 h-4.5 flex-shrink-0" size={18} />
+            <Icon size={18} />
             <span>{label}</span>
           </NavLink>
         ))}
       </nav>
 
-      {/* Bottom links */}
-      <div className="border-t border-slate-100 pt-4 space-y-1 mt-auto">
+      {/* Bottom */}
+      <div className="border-t border-slate-100 pt-4 space-y-1 shrink-0">
         <NavLink
           to={`/${user?.role}/notifications`}
           onClick={() => setSidebarOpen(false)}
-          className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''} relative`}
+          className="sidebar-link"
         >
           <Bell size={18} />
           <span>Notifications</span>
-          {unreadCount > 0 && (
-            <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
         </NavLink>
 
         <NavLink
           to={`/${user?.role}/profile`}
           onClick={() => setSidebarOpen(false)}
-          className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+          className="sidebar-link"
         >
           <User size={18} />
           <span>Profile</span>
@@ -149,65 +154,39 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-100 flex-shrink-0">
+      {/* Desktop */}
+      <aside className="hidden lg:flex flex-col w-64 bg-white border-r">
         <Sidebar />
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={() => setSidebarOpen(false)}
           />
           <aside className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl">
-            <div className="flex items-center justify-between px-5 pt-5">
-              <span className="font-display font-bold text-slate-900">Menu</span>
-              <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-lg hover:bg-slate-100">
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* FIXED: mobile sidebar scroll */}
-            <div className="h-full overflow-y-auto">
-              <Sidebar mobile />
-            </div>
+            <Sidebar mobile />
           </aside>
         </div>
       )}
 
-      {/* Main Content */}
+      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Top bar (mobile) */}
-        <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100">
-          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-slate-100">
-            <Menu size={20} />
+        {/* Top bar */}
+        <header className="lg:hidden flex justify-between items-center px-4 py-3 bg-white border-b">
+          <button onClick={() => setSidebarOpen(true)}>
+            <Menu />
           </button>
-
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-primary-600 rounded-lg flex items-center justify-center">
-              <GraduationCap className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display font-bold text-slate-900">LearnLoop</span>
-          </div>
-
-          <NavLink to={`/${user?.role}/notifications`} className="relative p-2">
-            <Bell size={20} className="text-slate-600" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                {unreadCount}
-              </span>
-            )}
-          </NavLink>
+          <span className="font-bold">LearnLoop</span>
+          <Bell />
         </header>
 
-        {/* Page content */}
+        {/* Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <Outlet />
-          </div>
+          <Outlet />
         </main>
       </div>
     </div>

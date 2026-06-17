@@ -9,28 +9,55 @@ const userSchema = new mongoose.Schema({
   avatar: { type: String, default: '' },
   phone: { type: String, default: '' },
   isActive: { type: Boolean, default: true },
-  // Student specific
+
   enrolledClasses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
   grade: { type: String, default: '' },
-  // Teacher specific
+
   teachingClasses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
   subjects: [{ type: String }],
-  // Analytics
+
   lastLogin: { type: Date },
   totalQuizzesTaken: { type: Number, default: 0 },
   averageScore: { type: Number, default: 0 },
 }, { timestamps: true });
 
+/* =========================
+   HASH PASSWORD
+========================= */
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
+  try {
+    if (!this.isModified('password')) return next();
+
+    if (!this.password) {
+      throw new Error("Password is required");
+    }
+
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
+/* =========================
+   SAFE PASSWORD CHECK
+========================= */
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    if (!candidatePassword || !this.password) {
+      return false;
+    }
+
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (err) {
+    console.error("bcrypt compare error:", err.message);
+    return false;
+  }
 };
 
+/* =========================
+   REMOVE PASSWORD FROM OUTPUT
+========================= */
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
